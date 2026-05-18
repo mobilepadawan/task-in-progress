@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Task-In-Progress</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="assets/images/post-it-64.png" type="image/png">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script type="module" src="assets/js/index.js"></script>
+</head>
+<body>
+    <header class="navbar">
+        <button id="toggle-sidebar-btn" class="icon-btn">☰</button>
+        <h1 class="app-title">Task-In-Progress</h1>
+        <button id="new-task-btn" class="nav-btn-primary">Nueva tarea</button>
+        <div class="user-profile">
+            <div class="user-info">FL</div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Panel Lateral Izquierdo (Proyectos) -->
+        <aside id="sidebar" class="sidebar hidden">
+            <div class="sidebar-header">
+                <h3>Proyectos</h3>
+            </div>
+            <ul class="project-list">
+                <li class="project-item active">Desarrollo Web</li>
+                <li class="project-item">Campaña Marketing</li>
+                <li class="project-item">Auditoría Q3</li>
+            </ul>
+        </aside>
+
+        <!-- Tablero Kanban Principal -->
+        <main class="kanban-board">
+            
+            <!-- Columna: Por Hacer -->
+            <div class="kanban-column" data-status="todo">
+                <div class="column-header status-todo">Backlog</div>
+                <div class="cards-container">
+                    
+                    <!-- Ejemplo de Card de Tarea -->
+                    <div class="task-card" draggable="true" id="task-1">
+                        <span class="open-task">...</span>
+                        <h4 class="task-title">Diseñar el esquema de Base de Datos en Firestore</h4>
+                        <p class="task-desc">Definir el esquema de Firestore y las relaciones de las colecciones.</p>
+                        <select class="status-select">
+                            <option value="todo" selected>Backlog</option>
+                            <option value="in-progress">En Curso</option>
+                            <option value="paused">Pausado / QA</option>
+                            <option value="done">Listo</option>
+                        </select>
+                    </div>
+
+                    <!-- Ejemplo de Card de Tarea -->
+                    <div class="task-card" draggable="true" id="task-1">
+                        <span class="open-task">...</span>
+                        <h4 class="task-title">Diseñar backend en Express-JS</h4>
+                        <p class="task-desc">Definir la estructura base del backend en ExpressJS y guardarlo en github/mobilepadawan para luego subirlo a Render.com.</p>
+                        <select class="status-select">
+                            <option value="todo" selected>Backlog</option>
+                            <option value="in-progress">En Curso</option>
+                            <option value="paused">Pausado / QA</option>
+                            <option value="done">Listo</option>
+                        </select>
+                    </div>
+                    <!-- Ejemplo de Card de Tarea -->
+                    <div class="task-card" draggable="true" id="task-1">
+                        <span class="open-task">...</span>
+                        <h4 class="task-title">Diseñar backend en Express-JS</h4>
+                        <p class="task-desc">Definir la estructura base del backend en ExpressJS y guardarlo en github/mobilepadawan para luego subirlo a Render.com.</p>
+                        <select class="status-select">
+                            <option value="todo" selected>Backlog</option>
+                            <option value="in-progress">En Curso</option>
+                            <option value="paused">Pausado / QA</option>
+                            <option value="done">Listo</option>
+                        </select>
+                    </div>
+                    <!-- Ejemplo de Card de Tarea -->
+                    <div class="task-card" draggable="true" id="task-1">
+                        <span class="open-task">...</span>
+                        <h4 class="task-title">Diseñar backend en Express-JS</h4>
+                        <p class="task-desc">Definir la estructura base del backend en ExpressJS y guardarlo en github/mobilepadawan para luego subirlo a Render.com.</p>
+                        <select class="status-select">
+                            <option value="todo" selected>Backlog</option>
+                            <option value="in-progress">En Curso</option>
+                            <option value="paused">Pausado / QA</option>
+                            <option value="done">Listo</option>
+                        </select>
+                    </div>
+                    <!-- Ejemplo de Card de Tarea -->
+                    <div class="task-card" draggable="true" id="task-1">
+                        <span class="open-task">...</span>
+                        <h4 class="task-title">Diseñar backend en Express-JS</h4>
+                        <p class="task-desc">Definir la estructura base del backend en ExpressJS y guardarlo en github/mobilepadawan para luego subirlo a Render.com.</p>
+                        <select class="status-select">
+                            <option value="todo" selected>Backlog</option>
+                            <option value="in-progress">En Curso</option>
+                            <option value="paused">Pausado / QA</option>
+                            <option value="done">Listo</option>
+                        </select>
+                    </div>
+                    <!-- Ejemplo de Card de Tarea -->
+                    <div class="task-card" draggable="true" id="task-1">
+                        <span class="open-task">...</span>
+                        <h4 class="task-title">Diseñar backend en Express-JS</h4>
+                        <p class="task-desc">Definir la estructura base del backend en ExpressJS y guardarlo en github/mobilepadawan para luego subirlo a Render.com.</p>
+                        <select class="status-select">
+                            <option value="todo" selected>Backlog</option>
+                            <option value="in-progress">En Curso</option>
+                            <option value="paused">Pausado / QA</option>
+                            <option value="done">Listo</option>
+                        </select>
+                    </div>
+                    <!-- Ejemplo de Card de Tarea -->
+                    <div class="task-card" draggable="true" id="task-1">
+                        <span class="open-task">...</span>
+                        <h4 class="task-title">Diseñar backend en Express-JS</h4>
+                        <p class="task-desc">Definir la estructura base del backend en ExpressJS y guardarlo en github/mobilepadawan para luego subirlo a Render.com.</p>
+                        <select class="status-select">
+                            <option value="todo" selected>Backlog</option>
+                            <option value="in-progress">En Curso</option>
+                            <option value="paused">Pausado / QA</option>
+                            <option value="done">Listo</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Columna: Trabajando -->
+            <div class="kanban-column" data-status="in-progress">
+                <div class="column-header status-inprogress">En Curso</div>
+                <div class="cards-container"></div>
+            </div>
+
+            <!-- Columna: En pausa -->
+            <div class="kanban-column" data-status="paused">
+                <div class="column-header status-paused">Pausado / QA</div>
+                <div class="cards-container"></div>
+            </div>
+
+            <!-- Columna: Finalizada -->
+            <div class="kanban-column" data-status="done">
+                <div class="column-header status-done">Listo</div>
+                <div class="cards-container"></div>
+            </div>
+
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,421 @@
+/* --- Variables y Estilos Globales --- */
+:root {
+    --bg-main: #ffffff;
+    --bg-column: #fbfbfb; /* Whitesmoke */
+    --border-color: #e0e0e0;
+    --text-color: #333333;
+    --text-light: #777777;
+    
+    /* Paleta Pastel solicitada */
+    --pastel-red: #ffb3b3;
+    --pastel-blue: #b3d9ff;
+    --pastel-yellow: #ffe699;
+    --pastel-green: #b3f0ff; /* Un verde agua/pastel muy limpio */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-color);
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Navbar --- */
+.navbar {
+    height: 60px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    background-color: var(--bg-main);
+    z-index: 10;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.icon-btn:hover {
+    background-color: var(--bg-column);
+}
+
+.app-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-left: 15px;
+    letter-spacing: -0.5px;
+}
+
+/* --- Botón Nueva Tarea en Navbar --- */
+.nav-btn-primary {
+    margin-left: auto;
+    background-color: var(--text-color); /* Color oscuro minimalista */
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.4s ease;
+}
+
+.nav-btn-primary:hover {
+    opacity: 0.9;
+}
+
+.nav-btn-primary:active {
+    opacity: 1;
+    transform: scale(.98);
+}
+
+/* Ajuste opcional para separar el botón del perfil de usuario si este tiene contenido */
+.user-profile {
+    margin-left: 15px; 
+}
+
+.user-profile .user-info {
+    width: 36px;                  /* Ancho fijo */
+    height: 36px;                 /* Alto idéntico para asegurar el círculo */
+    border-radius: 50%;           /* Hace la card completamente redonda */
+    background-color: var(--pastel-blue); /* Tu celeste pastel predefinido */
+    color: #000000;               /* Letra en negro */
+    
+    /* Centrado perfecto del texto interior */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Detalles tipográficos minimalistas */
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    cursor: pointer;
+    
+    /* Evita que el texto se seleccione al hacer click */
+    user-select: none; 
+}
+
+/* --- Contenedor Principal --- */
+.main-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+/* --- Sidebar Lateral --- */
+.sidebar {
+    width: 260px;
+    border-right: 1px solid var(--border-color);
+    background-color: var(--bg-main);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, margin-left 0.3s ease;
+}
+
+.sidebar.hidden {
+    margin-left: -260px;
+}
+
+.sidebar-header {
+    padding: 20px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-light);
+}
+
+.project-list {
+    list-style: none;
+    padding: 0 10px;
+}
+
+.project-item {
+    padding: 12px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+}
+
+.project-item:hover, .project-item.active {
+    background-color: var(--bg-column);
+}
+
+.project-item.active {
+    font-weight: 600;
+}
+
+/* --- Tablero Kanban --- */
+.kanban-board {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    padding: 15px;
+    background-color: var(--bg-main);
+    overflow-x: auto;
+}
+
+.kanban-column {
+    background-color: var(--bg-column);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid transparent;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* Estilo visual al arrastrar sobre la columna */
+.kanban-column.drag-over {
+    background-color: #eaeaea;
+    border: 1px dashed #cccccc;
+}
+
+/* Cabeceras de Columnas con Colores Pastel */
+.column-header {
+    padding: 15px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.status-todo { background-color: var(--pastel-red); }
+.status-inprogress { background-color: var(--pastel-blue); }
+.status-paused { background-color: var(--pastel-yellow); }
+.status-done { background-color: #b3ffe6; } /* Verde pastel suave */
+
+.cards-container {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* --- Cards de Tareas (Minimalistas) --- */
+.task-card {
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    cursor: grab;
+    transition: box-shadow 0.2s, transform 0.1s;
+    /* min-width: 370px; */
+    /* min-height: 200px; */
+    min-width: auto;
+    min-height: auto;
+}
+
+.task-card:active {
+    cursor: grabbing;
+}
+
+.task-card.dragging {
+    opacity: 0.4;
+    transform: scale(0.98);
+}
+
+.open-task {
+    padding: 6px;
+    float: right;
+    cursor: pointer;
+}
+
+.task-title {
+    padding: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.task-desc {
+    padding: 10px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    line-height: 1.4;
+    margin-bottom: 12px;
+    text-wrap: balance;
+}
+
+.status-select {
+    align-self: last baseline;
+    width: 50%;
+    padding: 6px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    background-color: var(--bg-column);
+    color: var(--text-color);
+    outline: none;
+    cursor: pointer;
+}
+
+/* Scrollbars Styles */
+
+/* --- Personalización Minimalista del Scrollbar --- */
+.cards-container::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.cards-container::-webkit-scrollbar-track {
+    background: transparent;  
+}
+
+.cards-container::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.08); 
+    border-radius: 10px; 
+    transition: background-color 0.2s ease;
+}
+
+.cards-container:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.18); 
+}
+
+/* --- Pantalla de Login --- */
+
+.login-page {
+    background-color: #ffffff; /* Fondo blanco puro */
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    width: 400px;
+    /* max-width: 400px; */
+    padding: 20px;
+}
+
+.wide {
+    width: 460px;
+}
+
+.login-card {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); /* Sombra casi imperceptible */
+    text-align: center;
+}
+
+.login-header img {
+    text-align: center;
+    width: 64px;
+    margin-bottom: 20px;
+}
+
+.app-title-login {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+}
+
+.login-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 30px;
+}
+
+/* --- Formulario --- */
+
+.form-group {
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-color);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background-color: var(--bg-column); /* Whitesmoke suave para inputs */
+    transition: border-color 0.2s, background-color 0.2s;
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: var(--pastel-blue);
+    background-color: #ffffff;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--pastel-blue); /* Botón oscuro minimalista o puedes usar var(--pastel-blue) */
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity filter 0.2s;
+    margin-top: 10px;
+}
+
+.login-btn:hover {
+    opacity: 0.9;
+    filter: brightness(0.95);
+}
+
+.login-btn:active {
+    opacity: 1;
+    transform: scale(0.98);
+}
+
+/* --- Footer Login --- */
+
+.login-footer {
+    margin-top: 25px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.register-link {
+    color: var(--pastel-blue); /* Usamos el azul pastel del tablero para el link */
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.register-link:hover {
+    border-bottom: 1px solid var(--pastel-blue);
+    filter: brightness(0.95);
+}
