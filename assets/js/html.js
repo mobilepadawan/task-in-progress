@@ -16,5 +16,4 @@ function returnTaskCard(task) {
             </div>`
 }
 
-
 export { returnTaskCard }

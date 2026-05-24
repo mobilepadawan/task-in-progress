@@ -17,10 +17,9 @@ const UserURLS = {
 }
 
 const projectsAndTasksURLS = {
-    // projectsURLS: "http://localhost:3000/api/v1/get-all-projects",
-    // tasksURLS: "http://localhost:3000/api/v1/get-all-tasks"
-    projectsURLS: "https://task-in-progress-backend.onrender.com/api/v1/get-all-projects",
-    tasksURLS: "https://task-in-progress-backend.onrender.com/api/v1/get-all-tasks"
+    getAllProjectsURL: "https://task-in-progress-backend.onrender.com/api/v1/get-all-projects",
+    postNewProjectURL: "https://task-in-progress-backend.onrender.com/api/v1/create-project",
+    getAllTasksURL: "https://task-in-progress-backend.onrender.com/api/v1/get-all-tasks"
 }
 
 const Options = {

@@ -4,6 +4,15 @@ import { returnTaskCard } from "./html.js"
 
 const projectsArray = []
 const tasksArray = []
+const btnNewProject = document.querySelector('button#new-project-btn')
+const btnCreateProject = document.querySelector('button#create-project-btn')
+
+// --- Dialog New Project and Elements ---
+const dialogNewProject = document.querySelector('dialog#new-project-dialog')
+const inputProjectId = document.querySelector('input#project-id')
+const inputProjectName = document.querySelector('input#project-title')
+const inputProjectDesc = document.querySelector('textarea#project-desc')
+const pCreatedAt = document.querySelector('p.p-created-at')
 
 // --- Lógica del Panel Lateral (Sidebar) ---
 const toggleBtn = document.getElementById('toggle-sidebar-btn')
@@ -27,9 +36,7 @@ function validarToken() {
 }
 
 function seleccionarProyecto(pId) {
-    console.log("Se ejecutó seleccionarProyecto:", pId)
     localStorage.setItem('projectSelected', pId)
-    console.log(document.querySelector(`li[data-project-id="${pId}"]`).dataset.projectId)
     const activeProject = document.querySelector(`li[data-project-id="${pId}"]`)
     activeProject.classList.add('active')
 }
@@ -48,7 +55,7 @@ function obtenerProyectos() {
     Options.headers['kanbantoken'] = kanbantokensession // para forzar error: +'aa'
     delete Options.body
 
-    fetch(projectsAndTasksURLS.projectsURLS, Options)
+    fetch(projectsAndTasksURLS.getAllProjectsURL, Options)
     .then((response)=> {
         if (response.ok) {
             return response.json()
@@ -58,7 +65,7 @@ function obtenerProyectos() {
         }
     })
     .then((data)=> {
-        console.table(data)
+        // console.table(data)
         if (data.success) {
             projectsArray.length = 0
             projectsArray.push(...data.projects)
@@ -102,12 +109,11 @@ function listarProyectos() {
 function obtenerTareas(pId) {
     let toastIcon = 'info'
     const kanbantokensession = Storage.getSessionToken('knbntkn')
-    console.log(kanbantokensession)
     Options.method = 'GET'
     Options.headers['kanbantoken'] = kanbantokensession // para forzar error: +'aa'
     delete Options.body
 
-    const getTasksEndpoint = new URL(`${projectsAndTasksURLS.tasksURLS}/${pId}`)
+    const getTasksEndpoint = new URL(`${projectsAndTasksURLS.getAllTasksURL}/${pId}`)
 
     fetch(getTasksEndpoint, Options)
     .then((response)=> {
@@ -119,7 +125,6 @@ function obtenerTareas(pId) {
         }
     })
     .then((data)=> {
-        console.table(data)
         limpiarColumnasTareas()
         if (data.success && data.tasks.length > 0) {
             tasksArray.length = 0
@@ -154,7 +159,6 @@ function cargarTareas(tasksArray) {
 
 // FUNCION PRINCIPAL
 validarToken()
-
 
 // EVENTOS
 cards.forEach(card => {
@@ -211,4 +215,54 @@ columns.forEach(column => {
 
 toggleBtn.addEventListener('click', () => {
     sidebar.classList.toggle('hidden')
+})
+
+btnNewProject.addEventListener('click', ()=> {
+    dialogNewProject.showModal()
+    dialogNewProject.addEventListener('close', ()=> {
+        inputProjectId.classList.remove('green-highlight')
+        btnCreateProject.removeAttribute('disabled')
+        inputProjectId.value = ''
+        inputProjectName.value = ''
+        inputProjectDesc.value = ''
+    })
+})
+
+btnCreateProject.addEventListener('click', (e)=> {
+    e.preventDefault()
+
+    if (inputProjectName && inputProjectDesc) {
+        const newProject = {
+            projectName: inputProjectName.value,
+            projectDescription: inputProjectDesc.value 
+        }
+
+        let toastIcon = 'info'
+        const kanbantokensession = Storage.getSessionToken('knbntkn')
+
+        Options.method = 'POST'
+        Options.headers['kanbantoken'] = kanbantokensession
+        Options.body = JSON.stringify(newProject)
+
+        fetch(projectsAndTasksURLS.postNewProjectURL, Options)
+        .then((response)=> {
+            if (response.ok) {
+                return response.json()
+            } else {
+                toastIcon = 'warning'
+                throw new Error('Error al intentar crear un nuevo proyecto.')
+            }
+        })
+        .then((data)=> {
+            inputProjectId.value = data.projectId
+            pCreatedAt.textContent += new Date(data.createdAt).toLocaleDateString()
+            inputProjectId.classList.add('green-highlight')
+            btnCreateProject.setAttribute('disabled', 'true')
+            showToastMessage('success', 'Proyecto creado exitosamente.')
+            .then((r)=> obtenerProyectos())
+        })
+        .catch((error)=> {
+            showToastMessage(toastIcon, error.message)
+        })
+    }
 })

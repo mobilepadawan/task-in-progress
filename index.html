@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Task-In-Progress</title>
@@ -9,7 +10,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="assets/js/index.js"></script>
 </head>
-<body> 
+
+<body>
     <header class="navbar">
         <button id="toggle-sidebar-btn" class="icon-btn">☰</button>
         <h1 class="app-title">Task-In-Progress</h1>
@@ -23,7 +25,10 @@
         <!-- Panel Lateral Izquierdo (Proyectos) -->
         <aside id="sidebar" class="sidebar hidden">
             <div class="btn-new-project-container">
-                <button id="new-task-btn" class="nav-btn-project">Nuevo proyecto</button>
+                <button id="new-project-btn" 
+                        class="nav-btn-project">
+                            Nuevo proyecto
+                </button>
             </div>
             <div class="sidebar-header">
                 <h3>Mis Proyectos</h3>
@@ -35,7 +40,7 @@
 
         <!-- Tablero Kanban Principal -->
         <main class="kanban-board">
-            
+
             <!-- Columna: Por Hacer -->
             <div class="kanban-column" data-status="Backlog">
                 <div class="column-header status-todo">Backlog</div>
@@ -69,6 +74,63 @@
             </div>
 
         </main>
+
+        <!-- Dialog Modal para Nuevo Proyecto -->
+        <dialog id="new-project-dialog" class="project-modal" closedby="close-btn">
+            <div class="modal-header">
+                <h2>Crear Proyecto</h2>
+                <button id="close-project-modal-btn" 
+                        class="close-btn" 
+                        aria-label="Cerrar modal"
+                        commandfor="new-project-dialog"
+                        command="close"
+                        title="Cerrar (ESC)"
+                >×</button>
+            </div>
+
+            <form method="dialog" class="modal-form">
+                 <div class="form-group">
+                    <label for="project-id">Proyect ID:</label>
+                     <input type="text" 
+                            id="project-id" 
+                            disabled
+                     >
+                 </div>
+
+                <div class="form-group">
+                    <label for="project-title">Título del Proyecto</label>
+                    <input type="text" 
+                           id="project-title" 
+                           placeholder="Ej. Sistema de Facturación" 
+                           min="5"
+                           max="30"
+                           required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="project-desc">Descripción del proyecto</label>
+                    <textarea id="project-desc" 
+                              rows="4"
+                              placeholder="Breve descripción de los objetivos del proyecto..." 
+                              min="20"
+                              max="100"
+                              required></textarea>
+                </div>
+                <div class="form-group">
+                    <p class="p-created-at"><strong>Creado el:</strong> </p>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" 
+                            id="create-project-btn" 
+                            class="nav-btn-project"
+                    >
+                        Crear proyecto
+                    </button>
+                </div>
+            </form>
+        </dialog>
     </div>
 </body>
+
 </html>
