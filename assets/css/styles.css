@@ -5,6 +5,7 @@
     --border-color: #e0e0e0;
     --text-color: #333333;
     --text-light: #777777;
+    --btn-project-color: #1e79d4;
     
     /* Paleta Pastel solicitada */
     --pastel-red: #ffb3b3;
@@ -38,6 +39,11 @@ body {
     padding: 0 20px;
     background-color: var(--bg-main);
     z-index: 10;
+}
+
+.btn-new-project-container {
+    margin: 20px;
+    text-align: center;
 }
 
 .icon-btn {
@@ -75,11 +81,33 @@ body {
     transition: opacity 0.4s ease;
 }
 
+.nav-btn-project {
+    /* margin-left: auto; */
+    background-color: var(--btn-project-color); /* Color oscuro minimalista */
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.4s ease;
+}
+
 .nav-btn-primary:hover {
     opacity: 0.9;
 }
 
+.nav-btn-project:hover {
+    opacity: 0.9;
+}
+
 .nav-btn-primary:active {
+    opacity: 1;
+    transform: scale(.98);
+}
+
+.nav-btn-project:active {
     opacity: 1;
     transform: scale(.98);
 }
@@ -252,13 +280,26 @@ body {
     text-overflow: ellipsis;
 }
 
-.task-desc {
+/* .task-desc {
     padding: 10px;
     font-size: 0.85rem;
     color: var(--text-light);
     line-height: 1.4;
     margin-bottom: 12px;
     text-wrap: balance;
+} */
+
+.task-desc {
+    padding: 10px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    line-height: 1.4;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    line-clamp: 4;          /* Cambiar nro para mostrar un poco más */
+    -webkit-line-clamp: 4;  /* Cambiar nro para mostrar un poco más */
+    overflow: hidden;
 }
 
 .status-select {

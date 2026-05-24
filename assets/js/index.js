@@ -1,15 +1,162 @@
-// --- Lógica del Panel Lateral (Sidebar) ---
-const toggleBtn = document.getElementById('toggle-sidebar-btn');
-const sidebar = document.getElementById('sidebar');
+import { Options, projectsAndTasksURLS, 
+         showToastMessage, Storage } from "./utils.js"
+import { returnTaskCard } from "./html.js"
 
-toggleBtn.addEventListener('click', () => {
-    sidebar.classList.toggle('hidden');
-});
+const projectsArray = []
+const tasksArray = []
+
+// --- Lógica del Panel Lateral (Sidebar) ---
+const toggleBtn = document.getElementById('toggle-sidebar-btn')
+const sidebar = document.getElementById('sidebar')
+const columns = document.querySelectorAll('.kanban-column')
 
 // --- Lógica de Drag and Drop y Sincronización de Combos ---
-const cards = document.querySelectorAll('.task-card');
-const columns = document.querySelectorAll('.kanban-column');
+const cards = document.querySelectorAll('.task-card')
 
+// Funciones Principales
+
+function validarToken() {
+    const token = Storage.getSessionToken('knbntkn')
+
+    if (token === "Error") {
+        showToastMessage('error', 'Usuario no identificado.')
+        .then((r)=> location.href = 'login.html')
+    } else {
+        obtenerProyectos()
+    }
+}
+
+function seleccionarProyecto(pId) {
+    console.log("Se ejecutó seleccionarProyecto:", pId)
+    localStorage.setItem('projectSelected', pId)
+    console.log(document.querySelector(`li[data-project-id="${pId}"]`).dataset.projectId)
+    const activeProject = document.querySelector(`li[data-project-id="${pId}"]`)
+    activeProject.classList.add('active')
+}
+
+function limpiarProyectoActivo() {
+    const projectItems = document.querySelectorAll('li.project-item')
+    if (projectItems.length > 0) {
+        projectItems.forEach((pItem)=> pItem.classList.remove('active'))
+    }    
+}
+
+function obtenerProyectos() {
+    let toastIcon = 'info'
+    const kanbantokensession = Storage.getSessionToken('knbntkn')
+    Options.method = 'GET'
+    Options.headers['kanbantoken'] = kanbantokensession // para forzar error: +'aa'
+    delete Options.body
+
+    fetch(projectsAndTasksURLS.projectsURLS, Options)
+    .then((response)=> {
+        if (response.ok) {
+            return response.json()
+        } else {
+            toastIcon = 'warning'
+            throw new Error('Error obteniendo proyectos.')
+        }
+    })
+    .then((data)=> {
+        console.table(data)
+        if (data.success) {
+            projectsArray.length = 0
+            projectsArray.push(...data.projects)
+            listarProyectos()
+        } else {
+            toastIcon = 'info'
+            throw new Error('No existen proyectos para listar.')
+        }
+    })
+    .catch((error)=> {
+        showToastMessage(toastIcon, error.message)
+    })
+}
+
+function listarProyectos() {
+    if (projectsArray.length > 0) {
+        const projectItems = []
+        const projectList = document.querySelector('ul.project-list')
+
+        projectsArray.forEach((project)=> {
+            const liProject = document.createElement('li')
+            liProject.classList.add('project-item')
+            liProject.textContent = `📂 ${project.projectName}`
+            liProject.title = project.projectDescription
+            liProject.dataset.projectId = project.projectId
+            liProject.dataset.projectStatus = project.status
+            liProject.addEventListener('click', ()=> {
+                limpiarProyectoActivo()
+                seleccionarProyecto(liProject.dataset.projectId)
+                obtenerTareas(liProject.dataset.projectId)
+            })
+            projectItems.push(liProject)
+        })
+        projectList.innerHTML = ""
+        projectList.append(...projectItems)
+    } else {
+        showToastMessage('info', 'No hay proyectos para listar.')
+    }
+}
+
+function obtenerTareas(pId) {
+    let toastIcon = 'info'
+    const kanbantokensession = Storage.getSessionToken('knbntkn')
+    console.log(kanbantokensession)
+    Options.method = 'GET'
+    Options.headers['kanbantoken'] = kanbantokensession // para forzar error: +'aa'
+    delete Options.body
+
+    const getTasksEndpoint = new URL(`${projectsAndTasksURLS.tasksURLS}/${pId}`)
+
+    fetch(getTasksEndpoint, Options)
+    .then((response)=> {
+        if (response.ok) {
+            return response.json()
+        } else {
+            toastIcon = 'warning'
+            throw new Error('Error obteniendo las tareas.')
+        }
+    })
+    .then((data)=> {
+        console.table(data)
+        limpiarColumnasTareas()
+        if (data.success && data.tasks.length > 0) {
+            tasksArray.length = 0
+            tasksArray.push(...data.tasks)
+            cargarTareas(tasksArray)
+        } else {
+            toastIcon = 'info'
+            throw new Error('No existen tareas para listar.')
+        }
+    })
+    .catch((error)=> {
+        showToastMessage(toastIcon, error.message)
+    })
+}
+
+function limpiarColumnasTareas() {
+    const taskCols = document.querySelectorAll('div.cards-container')
+    taskCols.length > 0 && taskCols.forEach((col)=> col.innerHTML = '')
+}
+
+function cargarTareas(tasksArray) {
+
+    if (tasksArray.length > 0) {
+        const divCardsContainerBacklog = document.querySelector('div.cards-container[data-containername="Backlog"]')
+        let taskCardsHTML = ''
+        tasksArray.forEach((task)=> {
+            taskCardsHTML += returnTaskCard(task)
+        })
+        divCardsContainerBacklog.innerHTML = taskCardsHTML
+    }
+}
+
+// FUNCION PRINCIPAL
+validarToken()
+
+
+// EVENTOS
 cards.forEach(card => {
     // Al empezar a arrastrar
     card.addEventListener('dragstart', () => {
@@ -30,7 +177,7 @@ cards.forEach(card => {
             targetColumn.appendChild(card);
         }
     });
-});
+})
 
 columns.forEach(column => {
     const container = column.querySelector('.cards-container');
@@ -60,4 +207,8 @@ columns.forEach(column => {
             }
         }
     });
-});
+})
+
+toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('hidden')
+})
