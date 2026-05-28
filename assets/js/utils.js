@@ -9,17 +9,15 @@ const User = {
 }
 
 const UserURLS = {
-    // userRegisterURL: "http://localhost:3000/api/v1/user-register",
     userRegisterURL: "https://task-in-progress-backend.onrender.com/api/v1/user-register",
-
     userLoginURL: "https://task-in-progress-backend.onrender.com/api/v1/user-login"
-    // userLoginURL: "http://localhost:3000/api/v1/user-login"
 }
 
 const projectsAndTasksURLS = {
     getAllProjectsURL: "https://task-in-progress-backend.onrender.com/api/v1/get-all-projects",
     postNewProjectURL: "https://task-in-progress-backend.onrender.com/api/v1/create-project",
-    getAllTasksURL: "https://task-in-progress-backend.onrender.com/api/v1/get-all-tasks"
+    getAllTasksURL: "https://task-in-progress-backend.onrender.com/api/v1/get-all-tasks",
+    postNewTaskURL: "https://task-in-progress-backend.onrender.com/api/v1/create-task"
 }
 
 const Options = {

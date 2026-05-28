@@ -4,8 +4,8 @@ import { returnTaskCard } from "./html.js"
 
 const projectsArray = []
 const tasksArray = []
+const btnNewTask = document.querySelector('button#new-task-btn')
 const btnNewProject = document.querySelector('button#new-project-btn')
-const btnCreateProject = document.querySelector('button#create-project-btn')
 
 // --- Dialog New Project and Elements ---
 const dialogNewProject = document.querySelector('dialog#new-project-dialog')
@@ -13,6 +13,18 @@ const inputProjectId = document.querySelector('input#project-id')
 const inputProjectName = document.querySelector('input#project-title')
 const inputProjectDesc = document.querySelector('textarea#project-desc')
 const pCreatedAt = document.querySelector('p.p-created-at')
+const btnCreateProject = document.querySelector('button#create-project-btn')
+
+// --- Dialog New Project and Elements ---
+const dialogNewTask = document.querySelector('dialog#new-task-dialog')
+const inputTaskId = document.querySelector('input#new-task-id')
+const inputTaskTitle = document.querySelector('input#new-task-title')
+const inputTaskDesc = document.querySelector('textarea#new-task-desc')
+const labelFechaAlta = document.querySelector('span#label-date-created')
+const labelFechaInicio = document.querySelector('span#label-date-started')
+const labelFechaFin = document.querySelector('span#label-date-ended')
+const labelEstado = document.querySelector('span#label-task-status')
+const btnCreateTask = document.querySelector('button#confirm-create-task-btn')
 
 // --- Lógica del Panel Lateral (Sidebar) ---
 const toggleBtn = document.getElementById('toggle-sidebar-btn')
@@ -228,6 +240,19 @@ btnNewProject.addEventListener('click', ()=> {
     })
 })
 
+btnNewTask.addEventListener('click', ()=> {
+    dialogNewTask.showModal()
+    dialogNewTask.addEventListener('close', ()=> {
+        inputTaskId.value = ''
+        inputTaskTitle.value = ''
+        inputTaskDesc.value = ''
+        labelFechaAlta.textContent = ''
+        labelFechaInicio.textContent = '' 
+        labelFechaFin.textContent = ''
+        labelEstado.textContent = ''
+    })
+})
+
 btnCreateProject.addEventListener('click', (e)=> {
     e.preventDefault()
 
@@ -260,6 +285,54 @@ btnCreateProject.addEventListener('click', (e)=> {
             btnCreateProject.setAttribute('disabled', 'true')
             showToastMessage('success', 'Proyecto creado exitosamente.')
             .then((r)=> obtenerProyectos())
+        })
+        .catch((error)=> {
+            showToastMessage(toastIcon, error.message)
+        })
+    }
+})
+
+btnCreateTask.addEventListener('click', (e)=> {
+    e.preventDefault()
+
+    if (inputTaskTitle && inputTaskDesc) {
+
+        let toastIcon = 'info'
+        const kanbantokensession = Storage.getSessionToken('knbntkn')
+        const projectId = Storage.getSessionToken('projectSelected')
+
+        const newTask = {
+            taskTitle: inputTaskTitle.value,
+            taskDescription: inputTaskDesc.value 
+        }
+
+        Options.method = 'POST'
+        Options.headers['kanbantoken'] = kanbantokensession
+        Options.body = JSON.stringify(newTask)
+
+        const postNewTaskEndpoint = new URL(`${projectsAndTasksURLS.postNewTaskURL}/${projectId}`)
+
+        fetch(postNewTaskEndpoint, Options)
+        .then((response)=> {
+            if (response.ok) {
+                return response.json()
+            } else {
+                toastIcon = 'warning'
+                throw new Error('Error al intentar crear una nueva tarea.')
+            }
+        })
+        .then((data)=> {
+            console.table(data)
+            inputTaskId.value = data.taskId 
+            labelFechaAlta.textContent = new Date(data.createdAt).toLocaleDateString()
+            inputTaskId.classList.add('green-highlight')
+            btnCreateTask.setAttribute('disabled', 'true')
+
+            showToastMessage('success', 'Tarea creada exitosamente.')
+            .then((r)=> {
+                dialogNewTask.close()
+                obtenerTareas(projectId)
+            })
         })
         .catch((error)=> {
             showToastMessage(toastIcon, error.message)

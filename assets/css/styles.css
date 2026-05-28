@@ -295,12 +295,13 @@ body {
     padding: 10px;
     font-size: 0.85rem;
     color: var(--text-light);
+    background-color: var(--bg-column);
     line-height: 1.4;
     margin-bottom: 12px;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    line-clamp: 4;          /* Cambiar nro para mostrar un poco más */
-    -webkit-line-clamp: 4;  /* Cambiar nro para mostrar un poco más */
+    line-clamp: 3;          /* Cambiar nro para mostrar un poco más */
+    -webkit-line-clamp: 3;  /* Cambiar nro para mostrar un poco más */
     overflow: hidden;
 }
 
@@ -577,3 +578,84 @@ body {
 .modal-actions .nav-btn-project:disabled:hover {
     opacity: none;
 }
+
+
+.modal-actions #confirm-create-task-btn:disabled {
+    opacity: .3;
+}
+
+.modal-actions #confirm-create-task-btn:disabled:active {
+    opacity: none;
+    transform: none;
+}
+
+.modal-actions #confirm-create-task-btn:disabled:hover {
+    opacity: none;
+}
+
+/* --- Ajustes específicos para el Modal de Tareas --- */
+
+.task-modal {
+    width: 500px; /* Un poco más ancho para acomodar la información de fechas */
+}
+
+/* Estilo para el input deshabilitado (taskId) */
+input:disabled {
+    background-color: #f0f0f0;
+    color: var(--text-light);
+    cursor: not-allowed;
+    border-style: dashed; /* Para diferenciarlo visualmente */
+}
+
+/* Grilla de Metadatos (Fechas y Estado) */
+.task-metadata-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    background-color: var(--bg-column); /* Whitesmoke */
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.metadata-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metadata-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-light);
+    letter-spacing: 0.5px;
+}s
+
+.metadata-value {
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+
+/* Estilo tipo etiqueta para el estado dentro del modal */
+.status-tag {
+    color: var(--btn-project-color);
+    font-weight: 600;
+}
+
+/* Alineación horizontal para el ID si quieres que ocupe menos espacio */
+.row-group {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.row-group label {
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+/* .row-group input {
+    max-width: 150px;
+} */

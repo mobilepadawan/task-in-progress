@@ -25,9 +25,8 @@
         <!-- Panel Lateral Izquierdo (Proyectos) -->
         <aside id="sidebar" class="sidebar hidden">
             <div class="btn-new-project-container">
-                <button id="new-project-btn" 
-                        class="nav-btn-project">
-                            Nuevo proyecto
+                <button id="new-project-btn" class="nav-btn-project">
+                    Nuevo proyecto
                 </button>
             </div>
             <div class="sidebar-header">
@@ -79,53 +78,103 @@
         <dialog id="new-project-dialog" class="project-modal" closedby="close-btn">
             <div class="modal-header">
                 <h2>Crear Proyecto</h2>
-                <button id="close-project-modal-btn" 
-                        class="close-btn" 
-                        aria-label="Cerrar modal"
-                        commandfor="new-project-dialog"
-                        command="close"
-                        title="Cerrar (ESC)"
-                >×</button>
+                <button id="close-project-modal-btn" class="close-btn" aria-label="Cerrar modal"
+                    commandfor="new-project-dialog" command="close" title="Cerrar (ESC)">×</button>
             </div>
 
             <form method="dialog" class="modal-form">
-                 <div class="form-group">
+                <div class="form-group">
                     <label for="project-id">Proyect ID:</label>
-                     <input type="text" 
-                            id="project-id" 
-                            disabled
-                     >
-                 </div>
+                    <input type="text" id="project-id" disabled>
+                </div>
 
                 <div class="form-group">
                     <label for="project-title">Título del Proyecto</label>
-                    <input type="text" 
-                           id="project-title" 
-                           placeholder="Ej. Sistema de Facturación" 
-                           min="5"
-                           max="30"
-                           required
-                    >
+                    <input type="text" id="project-title" placeholder="Ej. Sistema de Facturación" min="5" max="30"
+                        required>
                 </div>
 
                 <div class="form-group">
                     <label for="project-desc">Descripción del proyecto</label>
-                    <textarea id="project-desc" 
-                              rows="4"
-                              placeholder="Breve descripción de los objetivos del proyecto..." 
-                              min="20"
-                              max="100"
-                              required></textarea>
+                    <textarea id="project-desc" rows="4"
+                        placeholder="Breve descripción de los objetivos del proyecto..." min="20" max="100"
+                        required></textarea>
                 </div>
                 <div class="form-group">
                     <p class="p-created-at"><strong>Creado el:</strong> </p>
                 </div>
                 <div class="modal-actions">
-                    <button type="submit" 
-                            id="create-project-btn" 
-                            class="nav-btn-project"
-                    >
+                    <button type="submit" id="create-project-btn" class="nav-btn-project">
                         Crear proyecto
+                    </button>
+                </div>
+            </form>
+        </dialog>
+
+        <!-- Dialog Modal para Nueva Tarea -->
+        <dialog id="new-task-dialog" class="project-modal task-modal" closedby="close-btn">
+            <div class="modal-header">
+                <h2>Nueva Tarea</h2>
+                <button type="submit" 
+                        form="task-form" 
+                        formmethod="dialog" 
+                        class="close-btn"  
+                        commandfor="new-project-dialog" 
+                        command="close" aria-label="Cerrar modal">×</button>
+            </div>
+
+            <form method="dialog" id="task-form" class="modal-form">
+
+                <div class="form-group row-group">
+                    <label for="new-task-id">ID de Tarea</label>
+                    <input type="text" 
+                           id="new-task-id" 
+                           placeholder="Autogenerado..." 
+                           disabled
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="new-task-title">Título de la Tarea</label>
+                    <input type="text" 
+                           id="new-task-title" 
+                           placeholder="Ej. Implementar Auth API" 
+                           required
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="new-task-desc">Descripción</label>
+                    <textarea id="new-task-desc" 
+                              rows="3" 
+                              placeholder="Detalla los pasos a seguir..."
+                              required></textarea>
+                </div>
+
+                <div class="task-metadata-grid">
+                    <div class="metadata-item">
+                        <span class="metadata-label">Fecha Alta:</span>
+                        <span id="label-date-created" 
+                              class="metadata-value">--/--/----</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Fecha Inicio:</span>
+                        <span id="label-date-started" 
+                              class="metadata-value">--/--/----</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Fecha Fin:</span>
+                        <span id="label-date-ended" 
+                              class="metadata-value">--/--/----</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Estado:</span>
+                        <span id="label-task-status" 
+                              class="metadata-value status-tag">Pendiente</span>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" 
+                            id="confirm-create-task-btn" 
+                            class="nav-btn-primary">Crear tarea
                     </button>
                 </div>
             </form>
