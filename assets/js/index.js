@@ -1,5 +1,5 @@
 import { Options, projectsAndTasksURLS, showToastMessage, 
-         Storage, returnTaskStatusNumber } from "./utils.js"
+         Storage, returnTaskStatusNumber, returnTaskStatusText } from "./utils.js"
 import { returnTaskCard } from "./html.js"
 
 const projectsArray = []
@@ -162,7 +162,7 @@ function cargarTareas(tasksArray) {
         const doneContainer = document.querySelector('div.kanban-column[data-status="Listo"] .cards-container')
 
         tasksArray.forEach((task)=> {
-            const currentStatus = obtenerStatusTask(task)
+            const currentStatus = returnTaskStatusText(task)
             const taskHTML = returnTaskCard(task)
             const targetContainer = {
                 'Backlog': backlogContainer,
@@ -185,7 +185,7 @@ const columns = document.querySelectorAll('.kanban-column')
 let draggedTaskId = null
 
 function obtenerStatusTask(task) {
-    return task.taskStatus || task.status || 'Backlog'
+    return task.currentTaskStatus || task.status || 'Backlog'
 }
 
 function actualizarEstadoTaskBackend(taskId, status) {

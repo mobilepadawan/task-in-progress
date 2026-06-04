@@ -32,9 +32,6 @@ const Options = {
 class Storage {
     static saveCookie(name, value) {
         const encondedValue = encodeURIComponent(value)
-        // const tamanioTotal = name.length + encondedValue.length
-        // console.log('Tamaño de la cookie:', tamanioTotal)
-        // debug
         cookieStore.set(name, encondedValue)
         .then(()=> console.log("Ok"))
         .catch((error) => {
@@ -75,6 +72,25 @@ class Storage {
     }
 }
 
+const TaskStatus = [
+    {
+        id: 0,
+        statusText: "Backlog"
+    },
+    {
+        id: 1,
+        statusText: "En Curso"
+    },
+    {
+        id: 2,
+        statusText: "Pausado / QA"
+    },
+    {
+        id: 3,
+        statusText: "Listo"
+    }
+]
+
 function showToastMessage(icon, message) {
     return Swal.fire({
         toast: true,
@@ -88,29 +104,21 @@ function showToastMessage(icon, message) {
     })
 }
 
+function returnTaskStatusText(currentTask) {
+    const status = TaskStatus.find((task)=> task.id === currentTask.currentTaskStatus)
+
+    return status.statusText || 'Backlog'
+}
+
 function returnTaskStatusNumber(statusText) {
-    const TaskStatus = [
-        {
-            id: 1,
-            statusText: "Backlog"
-        },
-        {
-            id: 2,
-            statusText: "En Curso"
-        },
-        {
-            id: 3,
-            statusText: "Pausado / QA"
-        },
-        {
-            id: 4,
-            statusText: "Listo"
-        }
-    ]
 
     const statusNumber = TaskStatus.find((task)=> task.statusText.toLowerCase().includes(statusText.toLowerCase()))
 
     return statusNumber.id || 0
 }
 
-export { User, UserURLS, Options, showToastMessage, Storage, projectsAndTasksURLS, returnTaskStatusNumber }
+export { User, UserURLS, Options, 
+         showToastMessage, Storage, 
+         projectsAndTasksURLS, returnTaskStatusNumber,
+         returnTaskStatusText
+       }
