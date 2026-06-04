@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Recuperar Contraseña - Task-In-Progress</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="assets/images/post-it-64.png" type="image/png">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="assets/js/recover.js"></script>
+</head>
+<body class="login-page">
+
+    <div class="login-container">
+        <div class="login-card ">
+            <header class="login-header">
+                <img src="assets/images/post-it-64.png" alt="Task-In-Progress Logo">
+                <h1 class="app-title-login">Task-In-Progress</h1>
+                <p class="login-subtitle">Recupera el acceso a tu cuenta</p>
+            </header>
+
+            <form class="recovery-form" autocomplete="off">
+                <div class="form-group">
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" placeholder="ejemplo@correo.com" required>
+                </div>
+
+                <button type="submit" class="login-btn recover-btn">Recuperar Contraseña</button>
+            </form>
+
+            <footer class="login-footer">
+                <p><a href="index.html" 
+                      class="register-link">
+                      Volver a iniciar sesión
+                   </a>
+                </p>
+            </footer>
+        </div>
+    </div>
+
+</body>
+</html>

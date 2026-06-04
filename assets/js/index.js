@@ -1,0 +1,413 @@
+import { Options, projectsAndTasksURLS, showToastMessage, 
+         Storage, returnTaskStatusNumber } from "./utils.js"
+import { returnTaskCard } from "./html.js"
+
+const projectsArray = []
+const tasksArray = []
+const btnNewTask = document.querySelector('button#new-task-btn')
+const btnNewProject = document.querySelector('button#new-project-btn')
+
+// --- Dialog New Project and Elements ---
+const dialogNewProject = document.querySelector('dialog#new-project-dialog')
+const inputProjectId = document.querySelector('input#project-id')
+const inputProjectName = document.querySelector('input#project-title')
+const inputProjectDesc = document.querySelector('textarea#project-desc')
+const pCreatedAt = document.querySelector('p.p-created-at')
+const btnCreateProject = document.querySelector('button#create-project-btn')
+
+// --- Dialog New Project and Elements ---
+const dialogNewTask = document.querySelector('dialog#new-task-dialog')
+const inputTaskId = document.querySelector('input#new-task-id')
+const inputTaskTitle = document.querySelector('input#new-task-title')
+const inputTaskDesc = document.querySelector('textarea#new-task-desc')
+const labelFechaAlta = document.querySelector('span#label-date-created')
+const labelFechaInicio = document.querySelector('span#label-date-started')
+const labelFechaFin = document.querySelector('span#label-date-ended')
+const labelEstado = document.querySelector('span#label-task-status')
+const btnCreateTask = document.querySelector('button#confirm-create-task-btn')
+
+// --- Lógica del Panel Lateral (Sidebar) ---
+const toggleBtn = document.querySelector('button#toggle-sidebar-btn')
+const sidebar = document.querySelector('.sidebar')
+
+// Funciones Principales
+
+function validarToken() {
+    const token = Storage.getSessionToken('knbntkn')
+
+    if (token === "Error") {
+        showToastMessage('error', 'Usuario no identificado.')
+        .then((r)=> location.href = 'login.html')
+    } else {
+        obtenerProyectos()
+    }
+}
+
+function seleccionarProyecto(pId) {
+    localStorage.setItem('projectSelected', pId)
+    const activeProject = document.querySelector(`li[data-project-id="${pId}"]`)
+    activeProject.classList.add('active')
+}
+
+function limpiarProyectoActivo() {
+    const projectItems = document.querySelectorAll('li.project-item')
+    if (projectItems.length > 0) {
+        projectItems.forEach((pItem)=> pItem.classList.remove('active'))
+    }    
+}
+
+function obtenerProyectos() {
+    let toastIcon = 'info'
+    const kanbantokensession = Storage.getSessionToken('knbntkn')
+    Options.method = 'GET'
+    Options.headers['kanbantoken'] = kanbantokensession // para forzar error: +'aa'
+    delete Options.body
+
+    fetch(projectsAndTasksURLS.getAllProjectsURL, Options)
+    .then((response)=> {
+        if (response.ok) {
+            return response.json()
+        } else {
+            toastIcon = 'warning'
+            throw new Error('Error obteniendo proyectos.')
+        }
+    })
+    .then((data)=> {
+        // console.table(data)
+        if (data.success) {
+            projectsArray.length = 0
+            projectsArray.push(...data.projects)
+            listarProyectos()
+        } else {
+            toastIcon = 'info'
+            throw new Error('No existen proyectos para listar.')
+        }
+    })
+    .catch((error)=> {
+        showToastMessage(toastIcon, error.message)
+    })
+}
+
+function listarProyectos() {
+    if (projectsArray.length > 0) {
+        const projectItems = []
+        const projectList = document.querySelector('ul.project-list')
+
+        projectsArray.forEach((project)=> {
+            const liProject = document.createElement('li')
+            liProject.classList.add('project-item')
+            liProject.textContent = `📂 ${project.projectName}`
+            liProject.title = project.projectDescription
+            liProject.dataset.projectId = project.projectId
+            liProject.dataset.projectStatus = project.status
+            liProject.addEventListener('click', ()=> {
+                limpiarProyectoActivo()
+                seleccionarProyecto(liProject.dataset.projectId)
+                obtenerTareas(liProject.dataset.projectId)
+            })
+            projectItems.push(liProject)
+        })
+        projectList.innerHTML = ""
+        projectList.append(...projectItems)
+    } else {
+        showToastMessage('info', 'No hay proyectos para listar.')
+    }
+}
+
+function obtenerTareas(pId) {
+    let toastIcon = 'info'
+    const kanbantokensession = Storage.getSessionToken('knbntkn')
+    Options.method = 'GET'
+    Options.headers['kanbantoken'] = kanbantokensession // para forzar error: +'aa'
+    delete Options.body
+
+    const getTasksEndpoint = new URL(`${projectsAndTasksURLS.getAllTasksURL}/${pId}`)
+
+    fetch(getTasksEndpoint, Options)
+    .then((response)=> {
+        if (response.ok) {
+            return response.json()
+        } else {
+            toastIcon = 'warning'
+            throw new Error('Error obteniendo las tareas.')
+        }
+    })
+    .then((data)=> {
+        limpiarColumnasTareas()
+        if (data.success && data.tasks.length > 0) {
+            tasksArray.length = 0
+            tasksArray.push(...data.tasks)
+            cargarTareas(tasksArray)
+        } else {
+            toastIcon = 'info'
+            throw new Error('No existen tareas para listar.')
+        }
+    })
+    .catch((error)=> {
+        showToastMessage(toastIcon, error.message)
+    })
+}
+
+function limpiarColumnasTareas() {
+    const taskCols = document.querySelectorAll('div.cards-container')
+    taskCols.length > 0 && taskCols.forEach((col)=> col.innerHTML = '')
+}
+
+function cargarTareas(tasksArray) {
+
+    if (tasksArray.length > 0) {
+        const backlogContainer = document.querySelector('div.cards-container[data-containername="Backlog"]')
+        const inProgressContainer = document.querySelector('div.kanban-column[data-status="En Curso"] .cards-container')
+        const pausedContainer = document.querySelector('div.kanban-column[data-status="Pausado / QA"] .cards-container')
+        const doneContainer = document.querySelector('div.kanban-column[data-status="Listo"] .cards-container')
+
+        tasksArray.forEach((task)=> {
+            const currentStatus = obtenerStatusTask(task)
+            const taskHTML = returnTaskCard(task)
+            const targetContainer = {
+                'Backlog': backlogContainer,
+                'En Curso': inProgressContainer,
+                'Pausado / QA': pausedContainer,
+                'Listo': doneContainer
+            }[currentStatus] || backlogContainer
+
+            if (targetContainer) {
+                targetContainer.insertAdjacentHTML('beforeend', taskHTML)
+            }
+        })
+
+        habilitarDragAndDrop()
+    }
+}
+
+// --- Lógica de Drag and Drop y Sincronización de Combos ---
+const columns = document.querySelectorAll('.kanban-column')
+let draggedTaskId = null
+
+function obtenerStatusTask(task) {
+    return task.taskStatus || task.status || 'Backlog'
+}
+
+function actualizarEstadoTaskBackend(taskId, status) {
+    console.log(`Actualizar tarea ${taskId} a estado: ${status}`)
+    
+    const updateTask = {
+        currentTaskStatus: returnTaskStatusNumber(status)
+    }
+
+    const kanbantokensession = Storage.getSessionToken('knbntkn')
+    
+    Options.method = 'PUT'
+    Options.headers['kanbantoken'] = kanbantokensession
+    Options.body = JSON.stringify(updateTask)
+    
+    let toastIcon = 'info'
+
+    fetch(`${projectsAndTasksURLS.updateTaskURL}/${taskId}`,Options)
+    .then((response)=> {
+        if (response.ok) {
+            return response.json()
+        } else {
+            toastIcon = 'warning'
+            throw new Error('Error al intentar actualizar esta tarea.')
+        }
+    })
+    .then((data)=> {
+        toastIcon = 'success'
+        showToastMessage(toastIcon, 'Tarea actualizada exitosamente.')
+    })
+    .catch((error)=> {
+        toastIcon = 'error'
+        showToastMessage(toastIcon, error.message)
+    })
+}
+
+function onDragStart(event) {
+    draggedTaskId = event.currentTarget.id
+    event.dataTransfer.effectAllowed = 'move'
+    event.dataTransfer.setData('text/plain', draggedTaskId)
+    event.currentTarget.classList.add('dragging')
+}
+
+function onDragEnd(event) {
+    event.currentTarget.classList.remove('dragging')
+}
+
+function onDragOver(event) {
+    event.preventDefault()
+    event.dataTransfer.dropEffect = 'move'
+    event.currentTarget.classList.add('drag-over')
+}
+
+function onDragLeave(event) {
+    event.currentTarget.classList.remove('drag-over')
+}
+
+function onDrop(event) {
+    event.preventDefault()
+    event.currentTarget.classList.remove('drag-over')
+
+    const taskId = event.dataTransfer.getData('text/plain') || draggedTaskId
+    if (!taskId) return
+
+    const taskCard = document.getElementById(taskId)
+    if (!taskCard) return
+
+    const columnElement = event.currentTarget.closest('.kanban-column')
+    const newStatus = columnElement?.dataset.status || 'Backlog'
+    event.currentTarget.appendChild(taskCard)
+    actualizarTaskCardStatus(taskCard, newStatus)
+}
+
+function actualizarTaskCardStatus(taskCard, status) {
+    console.log(taskCard)
+    const statusSelect = taskCard.querySelector('.status-select')
+    if (statusSelect) {
+        statusSelect.value = status
+    }
+    taskCard.dataset.taskStatus = status
+    
+    // actualizarEstadoTaskBackend(taskCard.id, status)
+    const result = actualizarEstadoTaskBackend(taskCard.id, status)
+    console.log("Nuevo estado:", result)
+
+}
+
+function habilitarDragAndDrop() {
+    document.querySelectorAll('.task-card').forEach((card)=> {
+        card.addEventListener('dragstart', onDragStart)
+        card.addEventListener('dragend', onDragEnd)
+        const statusSelect = card.querySelector('.status-select')
+        if (statusSelect) {
+            statusSelect.addEventListener('change', ()=> {
+                card.dataset.taskStatus = statusSelect.value
+            })
+        }
+    })
+
+    document.querySelectorAll('.cards-container').forEach((container)=> {
+        container.addEventListener('dragover', onDragOver)
+        container.addEventListener('drop', onDrop)
+        container.addEventListener('dragleave', onDragLeave)
+    })
+}
+
+
+// FUNCION PRINCIPAL
+validarToken()
+
+// EVENTOS (No modificados)
+toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('hidden')
+})
+
+btnNewProject.addEventListener('click', ()=> {
+    dialogNewProject.showModal()
+    dialogNewProject.addEventListener('close', ()=> {
+        inputProjectId.classList.remove('green-highlight')
+        btnCreateProject.removeAttribute('disabled')
+        inputProjectId.value = ''
+        inputProjectName.value = ''
+        inputProjectDesc.value = ''
+    })
+})
+
+btnNewTask.addEventListener('click', ()=> {
+    dialogNewTask.showModal()
+    dialogNewTask.addEventListener('close', ()=> {
+        inputTaskId.value = ''
+        inputTaskTitle.value = ''
+        inputTaskDesc.value = ''
+        labelFechaAlta.textContent = ''
+        labelFechaInicio.textContent = '' 
+        labelFechaFin.textContent = ''
+        labelEstado.textContent = ''
+    })
+})
+
+btnCreateProject.addEventListener('click', (e)=> {
+        e.preventDefault()
+    
+        if (inputProjectName && inputProjectDesc) {
+            const newProject = {
+                projectName: inputProjectName.value,
+                projectDescription: inputProjectDesc.value 
+            }
+    
+            let toastIcon = 'info'
+            const kanbantokensession = Storage.getSessionToken('knbntkn')
+    
+            Options.method = 'POST'
+            Options.headers['kanbantoken'] = kanbantokensession
+            Options.body = JSON.stringify(newProject)
+    
+            fetch(projectsAndTasksURLS.postNewProjectURL, Options)
+            .then((response)=> {
+                if (response.ok) {
+                    return response.json()
+                } else {
+                    toastIcon = 'warning'
+                    throw new Error('Error al intentar crear un nuevo proyecto.')
+                }
+            })
+            .then((data)=> {
+                inputProjectId.value = data.projectId
+                pCreatedAt.textContent += new Date(data.createdAt).toLocaleDateString()
+                inputProjectId.classList.add('green-highlight')
+                btnCreateProject.setAttribute('disabled', 'true')
+                showToastMessage('success', 'Proyecto creado exitosamente.')
+                .then((r)=> obtenerProyectos())
+            })
+            .catch((error)=> {
+                showToastMessage(toastIcon, error.message)
+            })
+        }
+})
+
+btnCreateTask.addEventListener('click', (e)=> {
+        e.preventDefault()
+    
+        if (inputTaskTitle && inputTaskDesc) {
+    
+            let toastIcon = 'info'
+            const kanbantokensession = Storage.getSessionToken('knbntkn')
+            const projectId = Storage.getSessionToken('projectSelected')
+    
+            const newTask = {
+                taskTitle: inputTaskTitle.value,
+                taskDescription: inputTaskDesc.value 
+            }
+    
+            Options.method = 'POST'
+            Options.headers['kanbantoken'] = kanbantokensession
+            Options.body = JSON.stringify(newTask)
+    
+            const postNewTaskEndpoint = new URL(`${projectsAndTasksURLS.postNewTaskURL}/${projectId}`)
+    
+            fetch(postNewTaskEndpoint, Options)
+            .then((response)=> {
+                if (response.ok) {
+                    return response.json()
+                } else {
+                    toastIcon = 'warning'
+                    throw new Error('Error al intentar crear una nueva tarea.')
+                }
+            })
+            .then((data)=> {
+                console.table(data)
+                inputTaskId.value = data.taskId 
+                labelFechaAlta.textContent = new Date(data.createdAt).toLocaleDateString()
+                inputTaskId.classList.add('green-highlight')
+                btnCreateTask.setAttribute('disabled', 'true')
+    
+                showToastMessage('success', 'Tarea creada exitosamente.')
+                .then((r)=> {
+                    dialogNewTask.close()
+                    obtenerTareas(projectId)
+                })
+            })
+            .catch((error)=> {
+                showToastMessage(toastIcon, error.message)
+            })
+        }
+})
