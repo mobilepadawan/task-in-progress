@@ -220,6 +220,7 @@ body {
     border: 1px dashed #cccccc;
 }
 
+<<<<<<< HEAD
 /* Clase que se aplicará cuando la tarjeta está sobre una zona de drop válida */
 .kanban-column .cards-container.highlight {
     background-color: #f0f8ff; /* Un color claro para indicar "zona activa" */
@@ -239,6 +240,8 @@ body {
     cursor: grabbing;
 }
 
+=======
+>>>>>>> e0595d400036d9d2f0a7e1c7527abdc7628fef28
 /* Cabeceras de Columnas con Colores Pastel */
 .column-header {
     padding: 15px;
@@ -259,8 +262,11 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+<<<<<<< HEAD
 
     transition: background-color 0.2s ease;
+=======
+>>>>>>> e0595d400036d9d2f0a7e1c7527abdc7628fef28
 }
 
 /* --- Cards de Tareas (Minimalistas) --- */
@@ -676,3 +682,10 @@ input:disabled {
     margin-bottom: 0;
     white-space: nowrap;
 }
+<<<<<<< HEAD
+=======
+
+/* .row-group input {
+    max-width: 150px;
+} */
+>>>>>>> e0595d400036d9d2f0a7e1c7527abdc7628fef28
